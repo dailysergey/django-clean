@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env.dev
+#    depends_on:
+#      - postgresdb
+    networks: 
+      - django_net
+
+
+  postgresdb:
+    #image: postgres:13.0-alpine
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+#    environment:
+#      - POSTGRES_USER=admin
+#      - POSTGRES_PASSWORD=Aa123456
+#      - POSTGRES_DB=django_template
+    networks:
+      - django_net
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+       - 8081:80
+    environment:
+       - PGADMIN_DEFAULT_EMAIL=pgadmin@pgadmin.ru
+       - PGADMIN_DEFAULT_PASSWORD=pgadmin
+    logging:
+      driver: syslog
+      options:
+        tag: "pgadmin"
+    restart: always
+    networks:
+      - django_net
+
+volumes:
+  postgres_data:
+networks:
+  django_net:
+    external: true
