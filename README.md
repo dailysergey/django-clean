@@ -35,7 +35,7 @@ Uses gunicorn + nginx.
 
 
 ##### Useful docker commands
-1. docker-compose logs <service-name> - display inner service logs
+1. docker-compose logs 'SERVIEC_NAME' - display inner service logs
 1. docker-compose build --no-cache    - command rebuild service from docker-compose from scratch
 1. docker-compose up -d --build       - start services in detached mode with building services 
 1. docker volume ls                   - list all created volumes
