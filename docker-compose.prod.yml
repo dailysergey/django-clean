@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  web:
+  djangoweb:
     build:
       context: ./app
       dockerfile: Dockerfile.prod
@@ -14,24 +14,52 @@ services:
     env_file:
       - ./.env.prod
     depends_on:
-      - db
-  db:
-    image: postgres:13.0-alpine
+      - postgresdb
+    networks:
+      - django_net
+
+  postgresdb:
+    #image: postgres:13.0-alpine
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile    
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env.prod.db
+    networks:
+      - django_net
+
   nginx:
     build: ./nginx
     volumes:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
     ports:
-      - 1337:80
+      - 8090:80
     depends_on:
-      - web
-
+      - djangoweb
+    networks:
+      - django_net
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+       - 8081:80
+    environment:
+       - PGADMIN_DEFAULT_EMAIL=pgadmin@pgadmin.ru
+       - PGADMIN_DEFAULT_PASSWORD=pgadmin
+    logging:
+      driver: syslog
+      options:
+        tag: "pgadmin"
+    restart: always
+    networks:
+      - django_net      
 volumes:
   postgres_data:
   static_volume:
   media_volume:
+networks:
+  django_net:
+    external: true

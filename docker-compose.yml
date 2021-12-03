@@ -27,7 +27,7 @@ services:
       - 5432:5432
 #    environment:
 #      - POSTGRES_USER=admin
-#      - POSTGRES_PASSWORD=Aa123456
+#      - POSTGRES_PASSWORD=admindev
 #      - POSTGRES_DB=django_template
     networks:
       - django_net
